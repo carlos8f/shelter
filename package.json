@@ -1,0 +1,37 @@
+{
+  "name": "shelter",
+  "version": "0.0.0",
+  "description": "run a process with sensitive configuration (passwords, access tokens) using encryption or prompting",
+  "bin": "./bin/shelter",
+  "dependencies": {
+    "commander": "~1.2.0",
+    "extra": "~0.2.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "cli-prompt": "~0.3.0"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/carlos8f/shelter.git"
+  },
+  "homepage": "https://github.com/carlos8f/shelter",
+  "keywords": [
+    "secure",
+    "security",
+    "deploy",
+    "encryption",
+    "passphrase",
+    "bacon"
+  ],
+  "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "5386018897051d108dbdd93ec5740e03438d63aa",
+  "bugs": {
+    "url": "https://github.com/carlos8f/shelter/issues"
+  }
+}

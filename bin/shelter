@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+var cmd = require('commander')
+  , extra = require('extra')
+  , spawn = require('child_process').spawn
+
+cmd
+  .version(require('../package.json').version)
+  .usage('[options] -- <cmd> [cmd_options]')
+  .option('--raw', 'raw mode - hide input (for passwords, etc)')
+  .parse(process.argv);
+
+if (!extra.cmd) {
+  cmd.outputHelp();
+  process.exit(1);
+}
+
+function setRawMode(mode) {
+  if (process.stdin.setRawMode) {
+    process.stdin.setRawMode(mode);
+  }
+  else if (process.stdout.isTTY) {
+    tty.setRawMode(mode);
+  }
+}
+setRawMode(cmd.raw);
+
+var proc = spawn(extra.cmd, extra.args, {env: extra.env});
+proc.stdout.pipe(process.stdout);
+proc.stderr.pipe(process.stderr);
+process.stdin.pipe(proc.stdin);
+process.on('exit', function () {
+  proc.kill();
+});
