@@ -39,8 +39,11 @@ function log () {
   });
 
   proc.on('exit', function (code) {
-    log('exited with code %d', code, '- respawning');
-    if (!exiting) spawn();
+    log('exited with code %d', code);
+    if (!exiting) {
+      if (code) spawn();
+      else process.exit();
+    }
   });
 
   if (!spawns) {
@@ -57,6 +60,7 @@ function log () {
         e.send(logger.data[k] + '\n');
       });
     });
+    log('respawned');
   }
   spawns++;
   lastSpawn = new Date();

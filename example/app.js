@@ -1,7 +1,7 @@
 var prompt = require('cli-prompt');
 
+// crash in a bit
 setTimeout(function () {
-  // crash in a bit
   throw new Error('i crash');
 }, 5000);
 
