@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "cli-prompt": "~0.3.0"
+    "cli-prompt": "~0.3.2",
+    "safer": "~0.1.3"
   },
   "scripts": {
     "test": "make test"

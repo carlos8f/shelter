@@ -13,6 +13,7 @@ var cmd = require('commander')
 cmd
   .version(require('../package.json').version)
   .usage('[options] -- <cmd> [cmd_options]')
+  .option('--failsafe <seconds>', 'number of running seconds after which the process is considered "respawnable" (default: 10)', Number, 10)
   .parse(process.argv);
 
 if (!extra.cmd) {
@@ -50,6 +51,11 @@ function log () {
     logger = keylogger({stdout: proc.stdout, stderr: proc.stderr});
   }
   else {
+    var runningSeconds = Math.floor((Date.now() - lastSpawn.getTime()) / 1000);
+    if (runningSeconds < cmd.failsafe) {
+      log('ran for %ds, less than failsafe of %ds. refusing to respawn!', runningSeconds, cmd.failsafe);
+      process.exit(1);
+    }
     var out = through();
     proc.stdout.pipe(out);
     proc.stderr.pipe(out);

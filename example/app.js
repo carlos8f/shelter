@@ -1,13 +1,12 @@
-var prompt = require('cli-prompt');
+var safer = require('safer');
 
-// crash in a bit
-setTimeout(function () {
-  throw new Error('i crash');
-}, 5000);
+// passphrase is "blah blah"
 
-prompt.multi([
-  {key: 'username', required: true},
-  {key: 'password', required: true, type: 'password'}
-], function (conf) {
+safer.prompt(__dirname + '/conf.safe', function (err, conf) {
+  if (err) throw err;
   console.log(JSON.stringify(conf, null, 2));
+  // crash in a bit
+  setTimeout(function () {
+    throw new Error('i crash');
+  }, 5000);
 });
