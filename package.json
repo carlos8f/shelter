@@ -1,6 +1,6 @@
 {
   "name": "shelter",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "run a process which requires a prompted password, and auto-respawn it when it crashes",
   "bin": "./bin/shelter",
   "dependencies": {
