@@ -1,7 +1,7 @@
 shelter
 =======
 
-run a process with sensitive configuration (passwords, access tokens) using encryption or prompting
+run a process which requires a prompted password, and auto-respawn it when it crashes
 
 [![build status](https://secure.travis-ci.org/carlos8f/shelter.png)](http://travis-ci.org/carlos8f/shelter)
 
