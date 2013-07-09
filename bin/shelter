@@ -6,8 +6,8 @@ var cmd = require('commander')
   , expect = require('stream-expect')
   , through = require('through')
   , format = require('util').format
-  , respawns = 0
-  , lastRespawn
+  , spawns = 0
+  , lastSpawn
   , exiting = false
 
 cmd
@@ -39,11 +39,11 @@ function log () {
   });
 
   proc.on('exit', function (code) {
-    log('exited with code %d', code);
+    log('exited with code %d', code, '- respawning');
     if (!exiting) spawn();
   });
 
-  if (!respawns) {
+  if (!spawns) {
     logger = keylogger({stdout: proc.stdout, stderr: proc.stderr});
   }
   else {
@@ -57,8 +57,7 @@ function log () {
         e.send(logger.data[k] + '\n');
       });
     });
-    respawns++;
-    lastRespawn = new Date();
-    log('respawned');
   }
+  spawns++;
+  lastSpawn = new Date();
 })();
