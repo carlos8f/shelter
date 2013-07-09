@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 var cmd = require('commander')
+  , keylogger = require('keylogger')
+  , logger
   , extra = require('extra')
-  , spawn = require('child_process').spawn
+  , expect = require('stream-expect')
+  , through = require('through')
+  , format = require('util').format
+  , respawns = 0
+  , lastRespawn
+  , exiting = false
 
 cmd
   .version(require('../package.json').version)
   .usage('[options] -- <cmd> [cmd_options]')
-  .option('--raw', 'raw mode - hide input (for passwords, etc)')
   .parse(process.argv);
 
 if (!extra.cmd) {
@@ -14,20 +20,45 @@ if (!extra.cmd) {
   process.exit(1);
 }
 
-function setRawMode(mode) {
-  if (process.stdin.setRawMode) {
-    process.stdin.setRawMode(mode);
-  }
-  else if (process.stdout.isTTY) {
-    tty.setRawMode(mode);
-  }
+function log () {
+  var args = [].slice.call(arguments);
+  args[0] = '[%s] ' + args[0];
+  args.splice(1, 0, new Date().toISOString());
+  console.error(format.apply(null, args));
 }
-setRawMode(cmd.raw);
 
-var proc = spawn(extra.cmd, extra.args, {env: extra.env});
-proc.stdout.pipe(process.stdout);
-proc.stderr.pipe(process.stderr);
-process.stdin.pipe(proc.stdin);
-process.on('exit', function () {
-  proc.kill();
-});
+(function spawn () {
+  var proc = extra.spawn();
+  proc.stdout.pipe(process.stdout);
+  proc.stderr.pipe(process.stderr);
+  process.stdin.pipe(proc.stdin);
+
+  process.on('exit', function () {
+    exiting = true;
+    proc.kill();
+  });
+
+  proc.on('exit', function (code) {
+    log('exited with code %d', code);
+    if (!exiting) spawn();
+  });
+
+  if (!respawns) {
+    logger = keylogger({stdout: proc.stdout, stderr: proc.stderr});
+  }
+  else {
+    var out = through();
+    proc.stdout.pipe(out);
+    proc.stderr.pipe(out);
+    var e = expect.createExpect(out, proc.stdin);
+    Object.keys(logger.data).forEach(function (k) {
+      e.expect(new RegExp(k + ':'), function (err, output, match) {
+        if (err) throw err;
+        e.send(logger.data[k] + '\n');
+      });
+    });
+    respawns++;
+    lastRespawn = new Date();
+    log('respawned');
+  }
+})();

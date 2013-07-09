@@ -1,8 +1,9 @@
 var prompt = require('cli-prompt');
 
-setInterval(function () {
-    // keep process open
-  }, 1000);
+setTimeout(function () {
+  // crash in a bit
+  throw new Error('i crash');
+}, 5000);
 
 prompt.multi([
   {key: 'username', required: true},
